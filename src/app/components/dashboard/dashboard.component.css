@@ -1,0 +1,259 @@
+.panel {
+  background: #fff;
+  border: 1px solid #dbe3ff;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.head h2 {
+  margin: 0;
+}
+
+.head p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  color: #334155;
+}
+
+input {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.summary-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.summary-card p {
+  margin: 8px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.summary-card.income p {
+  color: #166534;
+}
+
+.summary-card.expense p {
+  color: #b91c1c;
+}
+
+.summary-card.balance p {
+  color: #1d4ed8;
+}
+
+.summary-card.categories p {
+  color: #0f766e;
+}
+
+.summary-card.budgets p {
+  color: #7c3aed;
+}
+
+.summary-card.goal p {
+  color: #0369a1;
+}
+
+.cross-page {
+  margin-bottom: 14px;
+}
+
+.cross-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cross-grid h4 {
+  margin: 0 0 6px;
+  color: #334155;
+}
+
+.cross-grid p {
+  margin: 4px 0;
+  color: #475569;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.chart-card,
+.budget-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.chart-card h3,
+.budget-card h3 {
+  margin: 0 0 10px;
+}
+
+.pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pie {
+  width: 170px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  border: 10px solid #fff;
+  box-shadow: inset 0 0 0 1px #e2e8f0;
+}
+
+.legend {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.bars {
+  display: grid;
+  gap: 10px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-label,
+.bar-value {
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+}
+
+.bar-fill.income {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.bar-fill.expense {
+  background: linear-gradient(90deg, #f97316, #dc2626);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.status {
+  font-size: 0.8rem;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.status.warn {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.status.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.empty {
+  margin: 0;
+  color: #64748b;
+}
+
+@media (max-width: 980px) {
+  .summary-grid,
+  .chart-grid,
+  .cross-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pie-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bar-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

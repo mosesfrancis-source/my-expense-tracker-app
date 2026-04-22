@@ -1,0 +1,66 @@
+<section class="panel">
+  <div class="header">
+    <h2>Transactions</h2>
+    <a routerLink="/transactions/new" class="btn">Add Transaction</a>
+  </div>
+
+  <div class="filters">
+    <label>
+      From
+      <input type="date" [(ngModel)]="fromDate" (ngModelChange)="applyFilters()" />
+    </label>
+    <label>
+      To
+      <input type="date" [(ngModel)]="toDate" (ngModelChange)="applyFilters()" />
+    </label>
+    <label>
+      Category
+      <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
+        <option value="">All</option>
+        @for (category of categories; track category.name) {
+          <option [value]="category.name">
+            {{ category.name }}
+          </option>
+        }
+      </select>
+    </label>
+    <label>
+      Min Amount
+      <input type="number" [(ngModel)]="minAmount" (ngModelChange)="applyFilters()" />
+    </label>
+    <label>
+      Max Amount
+      <input type="number" [(ngModel)]="maxAmount" (ngModelChange)="applyFilters()" />
+    </label>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (transaction of filteredTransactions; track transaction.id ?? $index) {
+          <tr>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.categoryName }}</td>
+            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.amount | currency }}</td>
+            <td>{{ transaction.notes || '-' }}</td>
+            <td>
+              <button (click)="edit(transaction.id)">Edit</button>
+              <button class="danger" (click)="remove(transaction.id)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

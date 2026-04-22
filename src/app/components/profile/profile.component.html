@@ -1,0 +1,31 @@
+<section class="panel">
+  <div class="head">
+    <h2>Profile</h2>
+    <p>Manage your account info and monthly budget goal.</p>
+  </div>
+
+  <form class="profile-form" [formGroup]="form" (ngSubmit)="saveProfile()">
+    <label>
+      Full Name
+      <input type="text" formControlName="name" placeholder="Your full name" />
+    </label>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" />
+    </label>
+
+    <label>
+      Monthly Budget Goal
+      <input type="number" min="0" formControlName="budgetGoal" />
+    </label>
+
+    <button type="submit" [disabled]="form.invalid || saving || loading">
+      {{ saving ? 'Saving...' : 'Update Profile' }}
+    </button>
+  </form>
+
+  @if (message) {
+    <p class="message">{{ message }}</p>
+  }
+</section>

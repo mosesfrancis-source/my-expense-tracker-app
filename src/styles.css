@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+	--bg-1: #f0f7ff;
+	--bg-2: #eef2ff;
+	--text: #10233e;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	min-height: 100%;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	color: var(--text);
+	background:
+		radial-gradient(circle at 20% 0%, rgba(14, 165, 233, 0.18), transparent 40%),
+		radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.12), transparent 32%),
+		linear-gradient(180deg, var(--bg-1), var(--bg-2));
+}

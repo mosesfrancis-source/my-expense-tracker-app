@@ -1,0 +1,130 @@
+<section class="panel">
+  <div class="head">
+    <div>
+      <h2>Dashboard & Analytics</h2>
+      <p>Monthly spending summary with visual charts and budget comparison.</p>
+    </div>
+    <label>
+      Month
+      <input type="month" [(ngModel)]="selectedMonth" [ngModelOptions]="{ standalone: true }" />
+    </label>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card income">
+      <h3>Total Income</h3>
+      <p>{{ totalIncome | currency }}</p>
+    </article>
+    <article class="summary-card expense">
+      <h3>Total Expense</h3>
+      <p>{{ totalExpense | currency }}</p>
+    </article>
+    <article class="summary-card balance">
+      <h3>Balance</h3>
+      <p>{{ balance | currency }}</p>
+    </article>
+    <article class="summary-card categories">
+      <h3>Categories</h3>
+      <p>{{ categories.length }}</p>
+    </article>
+    <article class="summary-card budgets">
+      <h3>Monthly Budgets</h3>
+      <p>{{ monthBudgetCount }}</p>
+    </article>
+    <article class="summary-card goal">
+      <h3>Profile Goal</h3>
+      <p>{{ monthlyGoal | currency }}</p>
+    </article>
+  </div>
+
+  <article class="budget-card cross-page">
+    <h3>Data From Other Pages</h3>
+    <div class="cross-grid">
+      <div>
+        <h4>Profile</h4>
+        <p>Name: {{ profile?.name || 'Not set' }}</p>
+        <p>Email: {{ profile?.email || 'Not set' }}</p>
+      </div>
+      <div>
+        <h4>Categories</h4>
+        <p>Total: {{ categories.length }}</p>
+        <p>Custom: {{ customCategoryCount }}</p>
+      </div>
+      <div>
+        <h4>Transactions</h4>
+        <p>This Month: {{ monthTransactions.length }}</p>
+        <p>All Records: {{ transactions.length }}</p>
+      </div>
+    </div>
+  </article>
+
+  <div class="chart-grid">
+    <article class="chart-card">
+      <h3>Category-wise Spending (Pie)</h3>
+      @if (categoryPieData.length) {
+        <div class="pie-wrap">
+          <div class="pie" [style.background]="pieBackground"></div>
+          <div class="legend">
+            <div class="legend-item" *ngFor="let item of categoryPieData">
+              <span class="swatch" [style.background]="item.color"></span>
+              <span>{{ item.name }} ({{ item.percent | number: '1.0-0' }}%)</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <p class="empty">No expense data for this month.</p>
+      }
+    </article>
+
+    <article class="chart-card">
+      <h3>Income vs Expense (Bar)</h3>
+      <div class="bars">
+        <div class="bar-row" *ngFor="let item of incomeExpenseBars">
+          <div class="bar-label">{{ item.label }}</div>
+          <div class="bar-track">
+            <div class="bar-fill" [ngClass]="item.className" [style.width]="item.width"></div>
+          </div>
+          <div class="bar-value">{{ item.value | currency }}</div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <article class="budget-card">
+    <h3>Budget vs Actual Comparison</h3>
+    @if (budgetComparison.length) {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Budget</th>
+              <th>Spent</th>
+              <th>Usage</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of budgetComparison">
+              <td>{{ item.categoryName }}</td>
+              <td>{{ item.limit | currency }}</td>
+              <td>{{ item.spent | currency }}</td>
+              <td>{{ item.percent | number: '1.0-0' }}%</td>
+              <td>
+                <span
+                  class="status"
+                  [class.warn]="item.alert === 'Warning'"
+                  [class.danger]="item.alert === 'Exceeded'"
+                >
+                  {{ item.alert }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty">No budgets configured for this month.</p>
+    }
+  </article>
+</section>

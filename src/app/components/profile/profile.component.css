@@ -1,0 +1,58 @@
+.panel {
+  background: #fff;
+  border: 1px solid #dbe3ff;
+  border-radius: 14px;
+  padding: 18px;
+  max-width: 760px;
+}
+
+.head h2 {
+  margin: 0;
+}
+
+.head p {
+  margin: 6px 0 16px;
+  color: #64748b;
+}
+
+.profile-form {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: #334155;
+  font-weight: 600;
+}
+
+input,
+button {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 11px;
+}
+
+input:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+button {
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.message {
+  margin: 12px 0 0;
+  color: #0f766e;
+}

@@ -1,0 +1,73 @@
+<section class="panel">
+  <div class="head">
+    <h2>Categories Management</h2>
+    <p>Predefined categories + user-defined categories with icons and colors.</p>
+  </div>
+
+  <form class="category-form" [formGroup]="form" (ngSubmit)="saveCategory()">
+    <label>
+      Category Name
+      <input formControlName="name" type="text" placeholder="e.g. Internet" />
+    </label>
+
+    <label>
+      Icon
+      <select formControlName="icon">
+        @for (icon of iconOptions; track icon) {
+          <option [value]="icon">{{ icon }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Color
+      <input formControlName="color" type="color" />
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'Saving...' : editingId ? 'Update Category' : 'Add Category' }}
+      </button>
+      @if (editingId) {
+        <button type="button" class="secondary" (click)="cancelEdit()">Cancel</button>
+      }
+    </div>
+  </form>
+
+  <div class="groups">
+    <article class="group-card">
+      <h3>Predefined</h3>
+      <div class="chips">
+        @for (category of defaultCategories; track category.id ?? category.name) {
+          <div class="chip" [style.border-left-color]="category.color">
+            <span class="icon">{{ category.icon }}</span>
+            <span>{{ category.name }}</span>
+            <span class="badge">Default</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="group-card">
+      <h3>Custom</h3>
+      @if (customCategories.length) {
+        <div class="chips">
+          @for (category of customCategories; track category.id ?? category.name) {
+            <div class="chip" [style.border-left-color]="category.color">
+              <span class="icon">{{ category.icon }}</span>
+              <span>{{ category.name }}</span>
+              <div class="row-actions">
+                <button type="button" class="small" (click)="beginEdit(category)">Edit</button>
+                <button type="button" class="small danger" (click)="removeCategory(category)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty">No custom categories yet.</p>
+      }
+    </article>
+  </div>
+</section>

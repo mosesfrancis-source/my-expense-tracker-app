@@ -1,0 +1,91 @@
+<section class="panel">
+  <div class="head">
+    <h2>Budget Planning</h2>
+    <p>Set monthly budgets per category and track alerts when nearing or exceeding limits.</p>
+  </div>
+
+  <form class="budget-form" [formGroup]="form" (ngSubmit)="saveBudget()">
+    <label>
+      Month
+      <input type="month" formControlName="month" />
+    </label>
+
+    <label>
+      Category
+      <select formControlName="categoryId">
+        <option value="">Select category</option>
+        @for (category of categories; track category.id ?? category.name) {
+          <option [value]="category.id">
+            {{ category.name }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Budget Limit
+      <input type="number" min="1" formControlName="limit" placeholder="e.g. 60000" />
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'Saving...' : editingId ? 'Update Budget' : 'Save Budget' }}
+      </button>
+      @if (editingId) {
+        <button type="button" class="secondary" (click)="cancelEdit()">Cancel</button>
+      }
+    </div>
+  </form>
+
+  <div class="status-head">
+    <h3>Budget vs Actual</h3>
+    <label>
+      View Month
+      <input type="month" [(ngModel)]="selectedMonth" [ngModelOptions]="{ standalone: true }" />
+    </label>
+  </div>
+
+  @if (monthBudgets.length) {
+    <div class="status-grid">
+      @for (item of monthBudgets; track item.id ?? item.categoryId) {
+        <article class="status-card">
+          <div class="row top">
+            <h4>{{ item.categoryName }}</h4>
+            <span
+              class="alert"
+              [class.warn]="item.alert === 'Warning'"
+              [class.danger]="item.alert === 'Exceeded'"
+            >
+              {{ item.alert }}
+            </span>
+          </div>
+
+          <div class="row values">
+            <span>Budget: {{ item.limit | currency }}</span>
+            <span>Spent: {{ item.spent | currency }}</span>
+          </div>
+
+          <div class="meter">
+            <div
+              class="fill"
+              [style.width]="getProgressWidth(item.percent)"
+              [class.warn]="item.alert === 'Warning'"
+              [class.danger]="item.alert === 'Exceeded'"
+            ></div>
+          </div>
+
+          <p class="percent">{{ item.percent | number: '1.0-0' }}% used</p>
+
+          <div class="row actions-row">
+            <button type="button" class="small" (click)="editBudget(item)">Edit</button>
+            <button type="button" class="small danger-btn" (click)="removeBudget(item.id)">
+              Delete
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <p class="empty">No budgets found for this month.</p>
+  }
+</section>

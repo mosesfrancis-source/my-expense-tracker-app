@@ -1,0 +1,46 @@
+<section class="panel">
+  <h2>{{ editing ? 'Edit Transaction' : 'Add Transaction' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+    <label>
+      Amount
+      <input type="number" formControlName="amount" />
+    </label>
+
+    <label>
+      Date
+      <input type="date" formControlName="date" />
+    </label>
+
+    <label>
+      Type
+      <select formControlName="type">
+        <option value="Expense">Expense</option>
+        <option value="Income">Income</option>
+      </select>
+    </label>
+
+    <label>
+      Category
+      <select formControlName="categoryId" (change)="onCategoryChange()">
+        <option value="">Select category</option>
+        @for (category of allCategoryOptions; track category.id) {
+          <option [value]="category.id">
+            {{ category.name }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <label class="full">
+      Notes
+      <input type="text" formControlName="notes" placeholder="Optional note" />
+    </label>
+
+    <div class="actions full">
+      <button type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'Saving...' : editing ? 'Update' : 'Save' }}
+      </button>
+    </div>
+  </form>
+</section>

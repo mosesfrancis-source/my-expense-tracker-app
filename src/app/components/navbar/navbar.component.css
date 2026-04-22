@@ -1,0 +1,44 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: linear-gradient(120deg, #0f172a, #1e3a8a);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.brand {
+  color: #e0f2fe;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+a,
+button {
+  color: #dbeafe;
+  text-decoration: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+a.active,
+a:hover,
+button:hover {
+  background: rgba(219, 234, 254, 0.15);
+  border-color: rgba(219, 234, 254, 0.25);
+}

@@ -1,0 +1,27 @@
+<section class="auth-wrap">
+  <div class="auth-card">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Track every naira with confidence.</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>Email</label>
+      <input type="email" formControlName="email" placeholder="you@example.com" />
+
+      <label>Password</label>
+      <input type="password" formControlName="password" placeholder="Enter password" />
+
+      <button type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'Signing in...' : 'Sign in' }}
+      </button>
+
+      <button class="google-btn" type="button" [disabled]="loading" (click)="onGoogleSignIn()">
+        {{ loading ? 'Please wait...' : 'Continue with Google' }}
+      </button>
+    </form>
+
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+    <p class="link-text">No account? <a routerLink="/register">Create one</a></p>
+  </div>
+</section>
