@@ -16,6 +16,7 @@ import { UserService } from '../../services/user.service';
 })
 export class RegisterComponent {
   error = '';
+  success = '';
   loading = false;
   private fb = inject(FormBuilder);
 
@@ -35,6 +36,7 @@ export class RegisterComponent {
 
   async onSubmit() {
     this.error = '';
+    this.success = '';
     if (this.form.invalid) {
       return;
     }
@@ -57,7 +59,10 @@ export class RegisterComponent {
         // Do not block authentication success if initial Firestore setup fails.
       }
 
-      await this.router.navigate(['/dashboard']);
+      this.success = 'Account created successfully. Redirecting to dashboard...';
+      await this.router.navigate(['/dashboard'], {
+        state: { accountCreated: true },
+      });
     } catch (error: any) {
       if (error instanceof FirebaseError && error.code === 'auth/operation-not-allowed') {
         this.error = 'Email/password is disabled. Switching to Google sign up...';
@@ -73,6 +78,7 @@ export class RegisterComponent {
 
   async onGoogleRegister() {
     this.error = '';
+    this.success = '';
     this.loading = true;
 
     try {
@@ -92,6 +98,11 @@ export class RegisterComponent {
       } catch {
         // Do not block auth success if Firestore initialization fails.
       }
+
+      this.success = 'Account created successfully. Redirecting to dashboard...';
+      await this.router.navigate(['/dashboard'], {
+        state: { accountCreated: true },
+      });
     } catch (error: any) {
       this.error = this.authService.getAuthErrorMessage(error);
     } finally {

@@ -1,32 +1,52 @@
 import { Injectable } from '@angular/core';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Observable } from 'rxjs';
 import { Budget } from '../models/budget.model';
-import { AuthService } from './auth.service';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
-  constructor(private authService: AuthService) {}
-
   getBudgets(): Observable<Budget[]> {
     return new Observable<Budget[]>((subscriber) => {
-      const ref = collection(db, 'budgets');
-      const unsubscribe = onSnapshot(
-        ref,
-        (snapshot) => {
-          const userId = this.authService.getCurrentUserId();
-          const budgets = snapshot.docs
-            .map((item) => ({ id: item.id, ...(item.data() as Omit<Budget, 'id'>) }))
-            .filter((budget) => budget.userId === userId)
-            .sort((a, b) => b.month.localeCompare(a.month));
+      let dataUnsubscribe: (() => void) | undefined;
 
-          subscriber.next(budgets);
+      const authUnsubscribe = onAuthStateChanged(
+        auth,
+        (user) => {
+          if (dataUnsubscribe) {
+            dataUnsubscribe();
+            dataUnsubscribe = undefined;
+          }
+
+          if (!user) {
+            subscriber.next([]);
+            return;
+          }
+
+          const ref = collection(db, 'budgets');
+          dataUnsubscribe = onSnapshot(
+            ref,
+            (snapshot) => {
+              const budgets = snapshot.docs
+                .map((item) => ({ id: item.id, ...(item.data() as Omit<Budget, 'id'>) }))
+                .filter((budget) => budget.userId === user.uid)
+                .sort((a, b) => b.month.localeCompare(a.month));
+
+              subscriber.next(budgets);
+            },
+            (error) => subscriber.error(error),
+          );
         },
         (error) => subscriber.error(error),
       );
 
-      return () => unsubscribe();
+      return () => {
+        if (dataUnsubscribe) {
+          dataUnsubscribe();
+        }
+        authUnsubscribe();
+      };
     });
   }
 

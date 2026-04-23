@@ -29,6 +29,7 @@ export class TransactionFormComponent implements OnInit {
     { id: 'Other', name: 'Other' },
   ];
   loading = false;
+  error = '';
   editing = false;
   transactionId = '';
 
@@ -64,8 +65,16 @@ export class TransactionFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (!this.form.value.date) {
+      this.form.patchValue({ date: this.getTodayDateString() });
+    }
+
     this.categoryService.getCategories().subscribe((categories) => {
       this.categories = categories;
+
+      if (this.form.value.categoryId && !this.form.value.categoryName) {
+        this.onCategoryChange();
+      }
     });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -100,6 +109,8 @@ export class TransactionFormComponent implements OnInit {
   }
 
   async onSubmit() {
+    this.error = '';
+
     if (this.form.invalid) {
       return;
     }
@@ -107,13 +118,22 @@ export class TransactionFormComponent implements OnInit {
     this.loading = true;
 
     const value = this.form.getRawValue();
+    const selectedCategory = this.allCategoryOptions.find((item) => item.id === value.categoryId);
+    const userId = this.authService.getCurrentUserId();
+
+    if (!userId) {
+      this.error = 'Your session expired. Please sign in again.';
+      this.loading = false;
+      return;
+    }
+
     const payload = {
-      userId: this.authService.getCurrentUserId(),
+      userId,
       amount: Number(value.amount),
       categoryId: value.categoryId,
-      categoryName: value.categoryName,
+      categoryName: selectedCategory?.name || value.categoryName || value.categoryId,
       date: value.date,
-      notes: value.notes,
+      notes: (value.notes || '').trim(),
       type: value.type,
     };
 
@@ -125,8 +145,17 @@ export class TransactionFormComponent implements OnInit {
       }
 
       await this.router.navigate(['/transactions']);
+    } catch {
+      this.error = 'Unable to save transaction right now. Please try again.';
     } finally {
       this.loading = false;
     }
+  }
+
+  private getTodayDateString(): string {
+    const date = new Date();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 }

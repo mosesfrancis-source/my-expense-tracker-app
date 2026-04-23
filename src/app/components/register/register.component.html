@@ -25,7 +25,11 @@
       </button>
     </form>
 
-    <p class="note">If Email/Password is disabled in Firebase, use Google sign in.</p>
+    <p class="note">You can create an account with Email/Password or Google.</p>
+
+    @if (success) {
+      <p class="success">{{ success }}</p>
+    }
 
     @if (error) {
       <p class="error">{{ error }}</p>

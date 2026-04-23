@@ -8,33 +8,53 @@ import {
   onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Observable } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
-import { AuthService } from './auth.service';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
-  constructor(private authService: AuthService) {}
-
   getTransactions(): Observable<Transaction[]> {
     return new Observable<Transaction[]>((subscriber) => {
-      const ref = collection(db, 'transactions');
-      const unsubscribe = onSnapshot(
-        ref,
-        (snapshot) => {
-          const userId = this.authService.getCurrentUserId();
-          const transactions = snapshot.docs
-            .map((item) => ({ id: item.id, ...(item.data() as Omit<Transaction, 'id'>) }))
-            .filter((transaction) => transaction.userId === userId)
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      let dataUnsubscribe: (() => void) | undefined;
 
-          subscriber.next(transactions);
+      const authUnsubscribe = onAuthStateChanged(
+        auth,
+        (user) => {
+          if (dataUnsubscribe) {
+            dataUnsubscribe();
+            dataUnsubscribe = undefined;
+          }
+
+          if (!user) {
+            subscriber.next([]);
+            return;
+          }
+
+          const ref = collection(db, 'transactions');
+          dataUnsubscribe = onSnapshot(
+            ref,
+            (snapshot) => {
+              const transactions = snapshot.docs
+                .map((item) => ({ id: item.id, ...(item.data() as Omit<Transaction, 'id'>) }))
+                .filter((transaction) => transaction.userId === user.uid)
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+              subscriber.next(transactions);
+            },
+            (error) => subscriber.error(error),
+          );
         },
         (error) => subscriber.error(error),
       );
 
-      return () => unsubscribe();
+      return () => {
+        if (dataUnsubscribe) {
+          dataUnsubscribe();
+        }
+        authUnsubscribe();
+      };
     });
   }
 

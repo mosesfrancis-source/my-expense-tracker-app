@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Observable } from 'rxjs';
 import { Category } from '../models/category.model';
 import { AuthService } from './auth.service';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
@@ -13,21 +14,43 @@ export class CategoryService {
 
   getCategories(): Observable<Category[]> {
     return new Observable<Category[]>((subscriber) => {
-      const ref = collection(db, 'categories');
-      const unsubscribe = onSnapshot(
-        ref,
-        (snapshot) => {
-          const userId = this.authService.getCurrentUserId();
-          const categories = snapshot.docs
-            .map((item) => ({ id: item.id, ...(item.data() as Omit<Category, 'id'>) }))
-            .filter((category) => category.userId === userId);
+      let dataUnsubscribe: (() => void) | undefined;
 
-          subscriber.next(categories);
+      const authUnsubscribe = onAuthStateChanged(
+        auth,
+        (user) => {
+          if (dataUnsubscribe) {
+            dataUnsubscribe();
+            dataUnsubscribe = undefined;
+          }
+
+          if (!user) {
+            subscriber.next([]);
+            return;
+          }
+
+          const ref = collection(db, 'categories');
+          dataUnsubscribe = onSnapshot(
+            ref,
+            (snapshot) => {
+              const categories = snapshot.docs
+                .map((item) => ({ id: item.id, ...(item.data() as Omit<Category, 'id'>) }))
+                .filter((category) => category.userId === user.uid);
+
+              subscriber.next(categories);
+            },
+            (error) => subscriber.error(error),
+          );
         },
         (error) => subscriber.error(error),
       );
 
-      return () => unsubscribe();
+      return () => {
+        if (dataUnsubscribe) {
+          dataUnsubscribe();
+        }
+        authUnsubscribe();
+      };
     });
   }
 

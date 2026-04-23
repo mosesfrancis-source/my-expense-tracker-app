@@ -86,6 +86,16 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.success {
+  margin-top: 12px;
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
 .link-text {
   margin-top: 12px;
   color: #334155;

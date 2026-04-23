@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { Budget } from '../../models/budget.model';
 import { Category } from '../../models/category.model';
 import { Transaction } from '../../models/transaction.model';
@@ -20,10 +22,13 @@ import { UserService } from '../../services/user.service';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+
   transactions: Transaction[] = [];
   budgets: Budget[] = [];
   categories: Category[] = [];
   profile: AppUser | null = null;
+  accountCreatedMessage = '';
   selectedMonth = this.getCurrentMonth();
 
   readonly chartColors = [
@@ -45,6 +50,7 @@ export class DashboardComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private dashboardService: DashboardService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +66,7 @@ export class DashboardComponent implements OnInit {
       this.categories = categories;
     });
 
+    this.initAccountCreatedMessage();
     void this.loadProfile();
   }
 
@@ -79,20 +86,28 @@ export class DashboardComponent implements OnInit {
     return this.dashboardService.getMonthlyTransactions(this.transactions, this.selectedMonth);
   }
 
+  get usingAllTimeFallback(): boolean {
+    return this.monthTransactions.length === 0 && this.transactions.length > 0;
+  }
+
+  get analyticsTransactions(): Transaction[] {
+    return this.usingAllTimeFallback ? this.transactions : this.monthTransactions;
+  }
+
   get totalIncome(): number {
-    return this.dashboardService.getTotalIncome(this.monthTransactions);
+    return this.dashboardService.getTotalIncome(this.analyticsTransactions);
   }
 
   get totalExpense(): number {
-    return this.dashboardService.getTotalExpense(this.monthTransactions);
+    return this.dashboardService.getTotalExpense(this.analyticsTransactions);
   }
 
   get balance(): number {
-    return this.dashboardService.getBalance(this.monthTransactions);
+    return this.dashboardService.getBalance(this.analyticsTransactions);
   }
 
   get categoryPieData(): Array<{ name: string; value: number; color: string; percent: number }> {
-    const summary = this.dashboardService.getCategorySummary(this.monthTransactions);
+    const summary = this.dashboardService.getCategorySummary(this.analyticsTransactions);
     const total = Math.max(
       1,
       Object.values(summary).reduce((sum, value) => sum + Number(value), 0),
@@ -136,7 +151,7 @@ export class DashboardComponent implements OnInit {
 
   get budgetComparison() {
     return this.dashboardService.getBudgetStatus(
-      this.transactions,
+      this.analyticsTransactions,
       this.budgets,
       this.selectedMonth,
     );
@@ -170,5 +185,16 @@ export class DashboardComponent implements OnInit {
     }
 
     this.profile = await this.userService.getUser(userId);
+  }
+
+  private initAccountCreatedMessage() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const state = this.router.getCurrentNavigation()?.extras.state || window.history.state;
+    if (state?.accountCreated) {
+      this.accountCreatedMessage = 'Account created successfully. Welcome!';
+    }
   }
 }

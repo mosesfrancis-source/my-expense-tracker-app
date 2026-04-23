@@ -42,5 +42,9 @@
         {{ loading ? 'Saving...' : editing ? 'Update' : 'Save' }}
       </button>
     </div>
+
+    @if (error) {
+      <p class="error full">{{ error }}</p>
+    }
   </form>
 </section>

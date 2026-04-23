@@ -1,8 +1,17 @@
 <section class="panel">
+  @if (accountCreatedMessage) {
+    <p class="success-banner">{{ accountCreatedMessage }}</p>
+  }
+
   <div class="head">
     <div>
       <h2>Dashboard & Analytics</h2>
       <p>Monthly spending summary with visual charts and budget comparison.</p>
+      @if (usingAllTimeFallback) {
+        <p class="fallback-note">
+          No transactions found for this month. Showing all-time analytics instead.
+        </p>
+      }
     </div>
     <label>
       Month
@@ -53,6 +62,7 @@
       <div>
         <h4>Transactions</h4>
         <p>This Month: {{ monthTransactions.length }}</p>
+        <p>Analytics Source: {{ analyticsTransactions.length }}</p>
         <p>All Records: {{ transactions.length }}</p>
       </div>
     </div>
